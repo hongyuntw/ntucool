@@ -6,11 +6,9 @@
 python gen_wav_text_pair.py --url "[YOUTUBE_VIDEO_URL]" --lan "[TRANSCRIPT_LANGUAGE]"
 
 example
-python gen_wav_text_pair.py --url "https://www.youtube.com/watch?v=Lm4vgG-0loo&ab_channel=TEDxTaipei" --lan "zh-TW"
+python gen_wav_text_pair.py --url "https://www.youtube.com/watch?v=Lm4vgG-0loo&ab_channel=TEDxTaipei"
 ````
 * YOUTUBE_VIDEO_URL = youtube url
-* TRANSCRIPT_LANGUAGE = the cc script of video (only support manually created script).
-    *  example: zh-TW, en
 
 
 running gen_wav_text_pair.py will create outputs folder, the structure will be like
