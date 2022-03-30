@@ -14,7 +14,7 @@ python gen_wav_text_pair.py --url "https://www.youtube.com/watch?v=Lm4vgG-0loo&a
 Running ```gen_wav_text_pair.py``` will create a folder named ```outputs```, the folder structure will be like
 ```
 .
-|-- Lm4vgG-0loo_zh-TW
+|-- Lm4vgG-0loo_zh-TW ([video_ID]_[transcript_language])
 |   |-- 0000.txt
 |   |-- 0000.wav
 |   |-- 0001.txt
