@@ -1,22 +1,20 @@
 # ntucool
 
 
-## usage
+## Usage
 ```
-python gen_wav_text_pair.py --url "[YOUTUBE_VIDEO_URL]" --lan "[TRANSCRIPT_LANGUAGE]"
+python gen_wav_text_pair.py --url "[YOUTUBE_VIDEO_URL]"
 
 example
-python gen_wav_text_pair.py --url "https://www.youtube.com/watch?v=Lm4vgG-0loo&ab_channel=TEDxTaipei" --lan "zh-TW"
+python gen_wav_text_pair.py --url "https://www.youtube.com/watch?v=Lm4vgG-0loo&ab_channel=TEDxTaipei"
 ````
 * YOUTUBE_VIDEO_URL = youtube url
-* TRANSCRIPT_LANGUAGE = the cc script of video (only support manually created script).
-    *  example: zh-TW, en
 
 
-running gen_wav_text_pair.py will create outputs folder, the structure will be like
+Running ```gen_wav_text_pair.py``` will create a folder named ```outputs```, the folder structure will be like
 ```
 .
-|-- Lm4vgG-0loo_zh-TW
+|-- Lm4vgG-0loo_zh-TW ([video_ID]_[transcript_language])
 |   |-- 0000.txt
 |   |-- 0000.wav
 |   |-- 0001.txt
