@@ -140,7 +140,7 @@ if __name__ == '__main__':
 
     video_url = args.url
     if not video_url:
-        sys.exit('[ERROR] url and transcript language are necessary')
+        sys.exit('[ERROR] youtube video url is necessary')
 
 
 
