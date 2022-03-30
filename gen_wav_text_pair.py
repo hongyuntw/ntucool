@@ -7,6 +7,10 @@ import argparse
 from yt_dlp import YoutubeDL
 from youtube_transcript_api import YouTubeTranscriptApi
 import sys
+import pysrt
+
+
+
 def download_wav(video_url, output_name=None):
     ## download youtube
 
@@ -29,19 +33,24 @@ def download_wav(video_url, output_name=None):
         ydl.download([video_url])
         return output_name
 
-def get_transcript(video_id, transcript_language):
+def get_transcript(video_id):
     
+    valid_lan_list = ['zh-TW', 'en']
     transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
-    print(transcript_list)
-    transcript = transcript_list.find_manually_created_transcript([transcript_language,])
-    texts = transcript.fetch()
-    return texts
+    results = []
+    for transcript in transcript_list:
+        if transcript.is_generated or transcript.language_code not in valid_lan_list:
+            continue
+        texts = transcript.fetch()
+        results.append({
+            'lang' : transcript.language_code,
+            'scripts': texts,
+        })
+ 
+    return results
 
 
-def split_wav_script(scripts, output_name):
-    output_name = os.path.join('./outputs', output_name)
-    os.makedirs(output_name, exist_ok=True)
-    wav_name = f"{output_name}.wav"
+def split_wav_script(scripts, wav_name, output_folder):
     print(wav_name)
     audio = AudioSegment.from_file(wav_name)
     cur_audio = AudioSegment.empty()
@@ -65,8 +74,9 @@ def split_wav_script(scripts, output_name):
 
         if cur_sec >= single_wav_sec:
             file_name = str(wav_id).zfill(4)
-            cur_audio.export(f'{output_name}/{file_name}.wav', format="wav")
-            fp = open(f'{output_name}/{file_name}.txt', 'w', encoding='utf-8')
+            cur_audio.export(f'{output_folder}/{file_name}.wav', format="wav")
+            fp = open(f'{output_folder}/{file_name}.txt', 'w', encoding='utf-8')
+            cur_script = cur_script.strip()
             print(cur_script, file=fp)
             fp.close()
             wav_id += 1
@@ -78,25 +88,58 @@ def split_wav_script(scripts, output_name):
         
     if cur_script != '':
         file_name = str(wav_id).zfill(4)
-        cur_audio.export(f'{output_name}/{file_name}.wav', format="wav")
-        fp = open(f'{output_name}/{file_name}.txt', 'w', encoding='utf-8')
-        print(text, file=fp)
+        cur_audio.export(f'{output_folder}/{file_name}.wav', format="wav")
+        fp = open(f'{output_folder}/{file_name}.txt', 'w', encoding='utf-8')
+        cur_script = cur_script.strip()
+        print(cur_script, file=fp)
+
+
+
+
+def conver_to_seconds(h, m, s, ms):
+    m += h * 60
+    s += m * 60
+    s = s + ms / 1000.0
+    return s
+
+
+def convert_srt(srt_path):
+    subs = pysrt.open(srt_path, encoding='utf-8')
+    scripts = []
+    for sub in subs:
+        print(sub.start)
+        start_sec = conver_to_seconds(sub.start.hours, sub.start.minutes, sub.start.seconds , sub.start.milliseconds)
+        end_sec = conver_to_seconds(sub.end.hours, sub.end.minutes, sub.end.seconds , sub.end.milliseconds)
+        duration = end_sec - start_sec
+        print(start_sec, end_sec, duration)
+        scripts.append({
+            'text' : sub.text,
+            'start' : start_sec,
+            'duration' : duration
+        })
+
+    return scripts
+
 
 
 
 if __name__ == '__main__':
     # video_url = 'https://www.youtube.com/watch?v=wWV0NCPD050&ab_channel=IrisYu'
     # video_url = 'https://www.youtube.com/watch?v=Lm4vgG-0loo&ab_channel=TEDxTaipei'
-    # transcript_language = 'zh-TW'
+    # video_url = 'https://www.youtube.com/watch?v=wWV0NCPD050&ab_channel=IrisYu'
+    # video_url = 'https://www.youtube.com/watch?v=6XhJtJU1rz4&ab_channel=webspeedyweb'
+
+
+    # srt_path = './tsai_yin_wen_bbc.srt'
+    # scripts = convert_srt(srt_path)
+    # exit(1)
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--url", dest="url", help="youtube video url", type=str)
-    parser.add_argument("--lan", dest="lan", help="youtube video transcript language", type=str)
     args = parser.parse_args()
 
     video_url = args.url
-    transcript_language = args.lan
-    if not (video_url and transcript_language):
+    if not video_url:
         sys.exit('[ERROR] url and transcript language are necessary')
 
 
@@ -107,8 +150,26 @@ if __name__ == '__main__':
 
     parsed_url = urlparse(video_url)
     video_id = parse_qs(parsed_url.query)['v'][0]    
-    output_name = f'{video_id}_{transcript_language}'
+    scripts = get_transcript(video_id)
+    # output_name = f'{video_id}'
+    if len(scripts) == 0:
+        # need ocr to build srt file
+        print('no manually cc script found, need to use ocr')
+        pass
+    else:
+        download_wav(video_url, video_id)
+        for item in scripts:
+            lang = item['lang']
+            scripts = item['scripts']
+            output_folder = os.path.join('./outputs', f'{video_id}_{lang}')
+            os.makedirs(output_folder, exist_ok=True)
+            split_wav_script(scripts, wav_name=f'./outputs/{video_id}.wav', output_folder=output_folder)
 
-    download_wav(video_url, output_name)
-    scripts = get_transcript(output_name, transcript_language)
-    split_wav_script(scripts, output_name)
+    
+
+
+    
+
+    
+    
+    
