@@ -1,7 +1,7 @@
 # ntucool
 
 
-## usage
+## Usage
 ```
 python gen_wav_text_pair.py --url "[YOUTUBE_VIDEO_URL]"
 
@@ -11,7 +11,7 @@ python gen_wav_text_pair.py --url "https://www.youtube.com/watch?v=Lm4vgG-0loo&a
 * YOUTUBE_VIDEO_URL = youtube url
 
 
-running gen_wav_text_pair.py will create outputs folder, the structure will be like
+Running ```gen_wav_text_pair.py``` will create a folder named ```outputs```, the folder structure will be like
 ```
 .
 |-- Lm4vgG-0loo_zh-TW
