@@ -3,7 +3,7 @@
 
 ## usage
 ```
-python gen_wav_text_pair.py --url "[YOUTUBE_VIDEO_URL]" --lan "[TRANSCRIPT_LANGUAGE]"
+python gen_wav_text_pair.py --url "[YOUTUBE_VIDEO_URL]"
 
 example
 python gen_wav_text_pair.py --url "https://www.youtube.com/watch?v=Lm4vgG-0loo&ab_channel=TEDxTaipei"
